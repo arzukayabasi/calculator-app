@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="tr">
+ <head><script>window["__codeletBootstrap__"]=JSON.parse('{"A":"A","B":"20260819-05-5fffd6c","C":{"Abril Fatface":"YACgEZbkUVE,0","Alfa Slab One":"YACgEYS9sJU,0","Anton":"YACgEcYqQ-A,0","Archivo":"YAHO2-t-jNE,0","Arial":"YAGyDvJ_4Ts,0","Bebas Neue":"YACgESME5ew,0","Bricolage Grotesque":"YAFyMcdwzpc,0","Canva Sans":"YAFLd8sKbwc,2","Caveat":"YALBs2ploWQ,0","Comic Sans MS":"YAHO2VMiyZo,0","Cormorant Garamond":"YAFdJhX-538,0","Courier New":"YAGzXiGs0_8,0","DM Sans":"YAD1aU3sLnI,0","DM Serif Display":"YAD1aYG82rc,0","Forum":"YACgEcnnqB4,0","Fraunces":"YAEul-FRQw4,0","Georgia":"YAGzXkO0pEM,0","Helvetica Neue":"YAFcf6CtJfI,0","Impact":"YAFcfnjI7Vk,0","Inter":"YAFdJvSyp_k,3","Iowan Old Style":"YAGNIFa8j9o,0","Jacques Francois":"YAHO2a5g66Q,0","JetBrains Mono":"YAFdJksXcAk,0","Libre Baskerville":"YACgEUFdPdA,0","Manrope":"YAHO2b2feC4,0","Merriweather":"YACgEXvHxxs,0","Montserrat":"YADLjI9qxTA,0","Nunito":"YACgEX8C5Gg,0","Oleo Script":"YACgEQQ14jI,0","Phantom Sans":"YAHO2E8Pb88,0","Playfair Display":"YACgEYmuCJE,0","Poppins":"YAFdJjbTu24,1","Press Start 2P":"YAFyGr-8pmQ,0","Quicksand":"YADWjpfPmdk,0","Raleway":"YACgEVg3xZg,0","Segoe UI":"YAHNdRD1Klw,0","Source Sans 3":"YAG4lO1Mj10,0","Spectral":"YAHO2rVUHIM,0","Times New Roman":"YAGzXW3gftg,0","Times":"YAGzXW3gftg,0","Ubuntu":"YACgERDU--Q,0","Work Sans":"YAGXhLOKv44,0","Yellowtail":"YACgEYG4kG4,0","ui-monospace":"YADlN8CFZ8Q,0","ui-sans-serif":"YACkoN-xg4g,0"}}');</script><script src="/_sdk/7949ff62d67710d5.telemetry_sdk.js" integrity="sha512-KIvXA82Di44YY/RH9/63A9MuTuavYgDFG8PfErJn7Wli4K0LAOk+coo/aPXk3+ZNL96nHh9VYD4PE+fLes+laQ=="></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hesap Makinesi</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #10182f;
+      --panel: #17213e;
+      --panel-deep: #0c1328;
+      --mist: #dbe7ff;
+      --soft: #8da1c8;
+      --orange: #ff8d4b;
+      --blue: #4e7dff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      font-family: "DM Sans", sans-serif;
+      color: var(--mist);
+    }
+
+    .calculator-shell {
+      width: 100%;
+      min-height: calc(100 * min(var(--vh, 1vh), 1vh));
+      display: grid;
+      place-items: center;
+      padding: 28px 18px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .calculator-shell::before,
+    .calculator-shell::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(2px);
+      pointer-events: none;
+    }
+
+    .calculator-shell::before {
+      width: 360px;
+      height: 360px;
+      top: -145px;
+      left: -115px;
+      background: radial-gradient(circle, rgba(78, 125, 255, 0.3), transparent 69%);
+    }
+
+    .calculator-shell::after {
+      width: 400px;
+      height: 400px;
+      right: -170px;
+      bottom: -170px;
+      background: radial-gradient(circle, rgba(255, 141, 75, 0.23), transparent 70%);
+    }
+
+    .calculator-device {
+      width: min(100%, 410px);
+      position: relative;
+      z-index: 1;
+      padding: 24px;
+      border: 1px solid rgba(219, 231, 255, 0.13);
+      border-radius: 34px;
+      background: rgba(23, 33, 62, 0.88);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.36), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      animation: settle 0.65s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+    }
+
+    .display-panel {
+      min-height: 150px;
+      border-radius: 24px;
+      padding: 20px;
+      background: var(--panel-deep);
+      border: 1px solid rgba(219, 231, 255, 0.07);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .history-display {
+      min-height: 24px;
+      color: var(--soft);
+      font: 400 14px/1.5 "Space Mono", monospace;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .result-display {
+      color: #f6f9ff;
+      font: 700 clamp(2.25rem, 10vw, 3.75rem)/1.15 "Space Mono", monospace;
+      letter-spacing: -0.07em;
+      text-align: right;
+      overflow-wrap: anywhere;
+    }
+
+    .key-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 11px;
+      margin-top: 18px;
+    }
+
+    .calc-key {
+      min-height: 62px;
+      border: 1px solid rgba(219, 231, 255, 0.08);
+      border-radius: 18px;
+      background: #202d50;
+      color: #f2f6ff;
+      cursor: pointer;
+      font-family: "DM Sans", sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      transition: transform 0.16s ease, filter 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 5px 12px rgba(0, 0, 0, 0.13);
+    }
+
+    .calc-key:hover {
+      filter: brightness(1.15);
+      transform: translateY(-2px);
+    }
+
+    .calc-key:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .calc-key:focus-visible {
+      outline: 3px solid #b8cbff;
+      outline-offset: 3px;
+    }
+
+    .calc-key.utility {
+      background: #29385e;
+    }
+
+    .calc-key.operator {
+      background: #314a84;
+      color: #dce6ff;
+    }
+
+    .calc-key.equal {
+      background: var(--orange);
+      color: #28130a;
+    }
+
+    .calc-key.zero {
+      grid-column: span 2;
+    }
+
+    .brand-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--orange);
+      box-shadow: 0 0 15px rgba(255, 141, 75, 0.85);
+    }
+
+    .key-grid .calc-key {
+      animation: key-in 0.45s ease both;
+    }
+
+    .key-grid .calc-key:nth-child(1) { animation-delay: 0.05s; }
+    .key-grid .calc-key:nth-child(2) { animation-delay: 0.08s; }
+    .key-grid .calc-key:nth-child(3) { animation-delay: 0.11s; }
+    .key-grid .calc-key:nth-child(4) { animation-delay: 0.14s; }
+    .key-grid .calc-key:nth-child(5) { animation-delay: 0.17s; }
+    .key-grid .calc-key:nth-child(6) { animation-delay: 0.20s; }
+    .key-grid .calc-key:nth-child(7) { animation-delay: 0.23s; }
+    .key-grid .calc-key:nth-child(8) { animation-delay: 0.26s; }
+
+    @keyframes settle {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes key-in {
+      from {
+        opacity: 0;
+        transform: translateY(9px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 390px) {
+      .calculator-device {
+        padding: 18px;
+        border-radius: 28px;
+      }
+
+      .calc-key {
+        min-height: 56px;
+        border-radius: 15px;
+      }
+
+      .display-panel {
+        min-height: 132px;
+      }
+    }
+  </style>
+  <script src="/_sdk/0e8d3a91e1c6f495.data_sdk.js" type="text/javascript" integrity="sha512-c00oDoGjsMgluCLLEyVl3suwEkgjOGGplVFbsilUoBg4aMKNmsL3mwsc9r0dPn95qiSZyjBousQXgROkAW7p/w=="></script>
+  <script src="/_sdk/eba18683f23e5798.resizing_sdk.js" type="text/javascript" integrity="sha512-E0UWUllhwPXaNJtjyTKXWKrIE+FruPfFpO4mRmMDP2LI+U9bOizy5npCq6xx/JyWcvSK7D3TFf2wFR2Mha9kbA=="></script>
+ </head>
+ <body data-template-id="__page-root">
+  <main class="calculator-shell">
+   <section class="calculator-device" aria-labelledby="calculator-heading">
+    <header class="flex items-center justify-between mb-5">
+     <div>
+      <div class="flex items-center gap-2 mb-1"><span class="brand-dot" aria-hidden="true"></span>
+       <p data-template-id="calculator-subtitle" class="canva-text m-0 uppercase tracking-[0.18em] text-xs font-semibold">Hızlı hesapla</p>
+      </div>
+      <h1 id="calculator-heading" data-template-id="calculator-title" class="canva-text m-0 font-bold">Hesap Makinesi</h1>
+     </div>
+     <div class="w-10 h-10 rounded-2xl bg-[#24345c] flex items-center justify-center text-[#b9cbff]" aria-hidden="true"><i data-lucide="calculator" style="width: 21px; height: 21px;"></i>
+     </div>
+    </header>
+    <section class="display-panel" aria-label="Hesaplama ekranı">
+     <div id="history-display" class="history-display" aria-live="polite"></div><output id="result-display" class="result-display" aria-live="assertive">0</output>
+    </section>
+    <div class="key-grid" role="group" aria-label="Hesap makinesi tuşları"><button type="button" class="calc-key utility" data-action="clear" aria-label="Temizle"> <span data-template-id="key-clear" class="canva-text">C</span> </button> <button type="button" class="calc-key utility" data-action="sign" aria-label="İşareti değiştir"> <span data-template-id="key-sign" class="canva-text">±</span> </button> <button type="button" class="calc-key utility" data-action="percent" aria-label="Yüzde"> <span data-template-id="key-percent" class="canva-text">%</span> </button> <button type="button" class="calc-key operator" data-action="operator" data-value="/" aria-label="Bölme"> <span data-template-id="key-divide" class="canva-text">÷</span> </button> <button type="button" class="calc-key" data-action="number" data-value="7"> <span data-template-id="key-seven" class="canva-text">7</span> </button> <button type="button" class="calc-key" data-action="number" data-value="8"> <span data-template-id="key-eight" class="canva-text">8</span> </button> <button type="button" class="calc-key" data-action="number" data-value="9"> <span data-template-id="key-nine" class="canva-text">9</span> </button> <button type="button" class="calc-key operator" data-action="operator" data-value="*" aria-label="Çarpma"> <span data-template-id="key-multiply" class="canva-text">×</span> </button> <button type="button" class="calc-key" data-action="number" data-value="4"> <span data-template-id="key-four" class="canva-text">4</span> </button> <button type="button" class="calc-key" data-action="number" data-value="5"> <span data-template-id="key-five" class="canva-text">5</span> </button> <button type="button" class="calc-key" data-action="number" data-value="6"> <span data-template-id="key-six" class="canva-text">6</span> </button> <button type="button" class="calc-key operator" data-action="operator" data-value="-" aria-label="Çıkarma"> <span data-template-id="key-minus" class="canva-text">−</span> </button> <button type="button" class="calc-key" data-action="number" data-value="1"> <span data-template-id="key-one" class="canva-text">1</span> </button> <button type="button" class="calc-key" data-action="number" data-value="2"> <span data-template-id="key-two" class="canva-text">2</span> </button> <button type="button" class="calc-key" data-action="number" data-value="3"> <span data-template-id="key-three" class="canva-text">3</span> </button> <button type="button" class="calc-key operator" data-action="operator" data-value="+" aria-label="Toplama"> <span data-template-id="key-plus" class="canva-text">+</span> </button> <button type="button" class="calc-key zero" data-action="number" data-value="0"> <span data-template-id="key-zero" class="canva-text">0</span> </button> <button type="button" class="calc-key" data-action="decimal" aria-label="Ondalık ayırıcı"> <span data-template-id="key-decimal" class="canva-text">,</span> </button> <button type="button" class="calc-key equal" data-action="equals" aria-label="Eşittir"> <span data-template-id="key-equals" class="canva-text">=</span> </button>
+    </div>
+   </section>
+  </main>
+  <script src="/_sdk/d97541380e824b1a.editing_sdk.js" integrity="sha512-iBVkuiyctyjmaqUwrsoYSc/nxwymdEKZMKPeBCNj6uN/7hFPTiMVeunYJjJVnUh1GNECKEyCerl7IHtlqhzSYQ=="></script>
+  <script>
+    const resultDisplay = document.getElementById("result-display");
+    const historyDisplay = document.getElementById("history-display");
+
+    let currentValue = "0";
+    let previousValue = null;
+    let operator = null;
+    let waitingForOperand = false;
+    let justCalculated = false;
+
+    const operatorSymbols = {
+      "+": "+",
+      "-": "−",
+      "*": "×",
+      "/": "÷"
+    };
+
+    function formatNumber(value) {
+      if (!Number.isFinite(value)) return "Hata";
+      const rounded = Number.parseFloat(Number(value).toPrecision(12));
+      return String(rounded).replace(".", ",");
+    }
+
+    function normalizedValue(value) {
+      return Number.parseFloat(String(value).replace(",", "."));
+    }
+
+    function updateDisplay() {
+      resultDisplay.textContent = currentValue === "Hata" ? "Hata" : currentValue.replace(".", ",");
+
+      if (previousValue !== null && operator) {
+        historyDisplay.textContent = `${formatNumber(previousValue)} ${operatorSymbols[operator]}`;
+      } else {
+        historyDisplay.textContent = "";
+      }
+    }
+
+    function resetCalculator() {
+      currentValue = "0";
+      previousValue = null;
+      operator = null;
+      waitingForOperand = false;
+      justCalculated = false;
+      updateDisplay();
+    }
+
+    function inputNumber(number) {
+      if (currentValue === "Hata" || justCalculated || waitingForOperand) {
+        currentValue = number;
+        waitingForOperand = false;
+        justCalculated = false;
+      } else {
+        currentValue = currentValue === "0" ? number : currentValue + number;
+      }
+
+      updateDisplay();
+    }
+
+    function inputDecimal() {
+      if (currentValue === "Hata" || justCalculated || waitingForOperand) {
+        currentValue = "0.";
+        waitingForOperand = false;
+        justCalculated = false;
+      } else if (!currentValue.includes(".")) {
+        currentValue += ".";
+      }
+
+      updateDisplay();
+    }
+
+    function calculate(first, second, operation) {
+      if (operation === "+") return first + second;
+      if (operation === "-") return first - second;
+      if (operation === "*") return first * second;
+      if (operation === "/") return second === 0 ? null : first / second;
+      return second;
+    }
+
+    function showDivisionError() {
+      currentValue = "Hata";
+      previousValue = null;
+      operator = null;
+      waitingForOperand = true;
+      justCalculated = true;
+      historyDisplay.textContent = "Sıfıra bölme yapılamaz";
+      resultDisplay.textContent = "Hata";
+    }
+
+    function chooseOperator(nextOperator) {
+      if (currentValue === "Hata") {
+        resetCalculator();
+        return;
+      }
+
+      const inputValue = normalizedValue(currentValue);
+
+      if (operator && waitingForOperand) {
+        operator = nextOperator;
+        updateDisplay();
+        return;
+      }
+
+      if (previousValue === null) {
+        previousValue = inputValue;
+      } else if (operator) {
+        const computed = calculate(previousValue, inputValue, operator);
+
+        if (computed === null) {
+          showDivisionError();
+          return;
+        }
+
+        currentValue = String(computed);
+        previousValue = computed;
+      }
+
+      operator = nextOperator;
+      waitingForOperand = true;
+      justCalculated = false;
+      updateDisplay();
+    }
+
+    function performCalculation() {
+      if (!operator || previousValue === null || currentValue === "Hata") return;
+
+      const secondValue = normalizedValue(currentValue);
+      const calculatedOperator = operator;
+      const computed = calculate(previousValue, secondValue, calculatedOperator);
+      const readableHistory = `${formatNumber(previousValue)} ${operatorSymbols[calculatedOperator]} ${formatNumber(secondValue)} =`;
+
+      if (computed === null) {
+        showDivisionError();
+        return;
+      }
+
+      currentValue = String(computed);
+      previousValue = null;
+      operator = null;
+      waitingForOperand = true;
+      justCalculated = true;
+      historyDisplay.textContent = readableHistory;
+      resultDisplay.textContent = currentValue.replace(".", ",");
+    }
+
+    function toggleSign() {
+      if (currentValue === "0" || currentValue === "Hata") return;
+
+      currentValue = String(normalizedValue(currentValue) * -1);
+      updateDisplay();
+    }
+
+    function applyPercent() {
+      if (currentValue === "Hata") return;
+
+      currentValue = String(normalizedValue(currentValue) / 100);
+      updateDisplay();
+    }
+
+    function backspace() {
+      if (waitingForOperand || currentValue === "Hata") return;
+
+      currentValue = currentValue.length > 1 ? currentValue.slice(0, -1) : "0";
+
+      if (currentValue === "-" || currentValue === "") {
+        currentValue = "0";
+      }
+
+      updateDisplay();
+    }
+
+    document.querySelectorAll("[data-action]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const { action, value } = button.dataset;
+
+        if (action === "number") inputNumber(value);
+        if (action === "decimal") inputDecimal();
+        if (action === "operator") chooseOperator(value);
+        if (action === "equals") performCalculation();
+        if (action === "clear") resetCalculator();
+        if (action === "sign") toggleSign();
+        if (action === "percent") applyPercent();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      const key = event.key;
+
+      if (/^\d$/.test(key)) {
+        inputNumber(key);
+      } else if (key === "." || key === ",") {
+        inputDecimal();
+      } else if (["+", "-", "*", "/"].includes(key)) {
+        event.preventDefault();
+        chooseOperator(key);
+      } else if (key === "Enter" || key === "=") {
+        event.preventDefault();
+        performCalculation();
+      } else if (key === "Escape") {
+        resetCalculator();
+      } else if (key === "Backspace") {
+        event.preventDefault();
+        backspace();
+      }
+    });
+
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+
+    updateDisplay();
+  </script>
+ </body>
+</html>
